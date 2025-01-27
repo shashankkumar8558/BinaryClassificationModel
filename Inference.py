@@ -2,6 +2,7 @@ from input import InputHandle
 from model import Network
 import torch
 from loguru import logger
+
 class Classifier(InputHandle):
   def __init__(self, inputImage:str):
     super().__init__(inputImage)
@@ -9,16 +10,17 @@ class Classifier(InputHandle):
     self.__model.eval()
     
   def load_weights(self, model_state:str = None, device:str = 'cpu')->None:
+    self.device = device
     self.__model.load_state_dict(
       torch.load(
         model_state,
         map_location=torch.device(device=device)
         ) )
-    logger.info(self.__model,"Model Loaded Successfully")
+    logger.info("Model Loaded Successfully")
     
-  def predict(self,device:str='cpu')->str:
+  def predict(self)->str:
       image_tensor = self.process().unsqueeze(0)
-      image_tensor = image_tensor.to(device=device)
+      image_tensor = image_tensor.to(self.device)
       
       with torch.no_grad():
         
@@ -29,8 +31,8 @@ class Classifier(InputHandle):
 
 
 if __name__ == "__main__":
-  classifier = Classifier("./dog.webp")
+  classifier = Classifier("./dogie.jpg")
   classifier.load_weights("BinaryClassifier.pth","cpu")
-  prediction = classifier.predict("cpu")
+  prediction = classifier.predict()
   
   print(prediction)
