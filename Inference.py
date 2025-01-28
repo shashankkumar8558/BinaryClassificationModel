@@ -1,12 +1,12 @@
 from input import InputHandle
-from model import SimpleResNet
+from model import Network
 import torch
 from loguru import logger
-from torch.nn import functional as F
+
 class Classifier(InputHandle):
   def __init__(self, inputImage:str):
     super().__init__(inputImage)
-    self.__model = SimpleResNet(num_classes=1)
+    self.__model = Network()
     self.__model.eval()
     
   def load_weights(self, model_state:str = None, device:str = 'cpu')->None:
@@ -25,14 +25,14 @@ class Classifier(InputHandle):
       with torch.no_grad():
         
         output = self.__model(image_tensor)
-        out = F.sigmoid(output)
-        return "cat" if out <=0.5 else "dog" 
+        _, predicted_class = torch.max(output, 1)
+        return f"Predicted Class :{predicted_class.item()}"  
 
 
 
 if __name__ == "__main__":
-  classifier = Classifier("./dog.webp")
-  classifier.load_weights("model.pth","cpu")
+  classifier = Classifier("./dogie.jpg")
+  classifier.load_weights("BinaryClassifier.pth","cpu")
   prediction = classifier.predict()
   
   print(prediction)
