@@ -1,6 +1,8 @@
 Data/
 venv/
 .venv/
+venv2/
 dog.webp/
 cat.jpg/
 dogie.jpg/
+model.pth/
